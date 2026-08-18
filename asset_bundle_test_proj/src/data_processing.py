@@ -10,7 +10,7 @@
 # COMMAND ----------
 
 # DBTITLE 1,Get parameters
-# Parameters passed from the job
+# Parameters passed from the job dafdf
 dbutils.widgets.text("catalog", "main", "Catalog Name")
 dbutils.widgets.text("schema", "default", "Schema Name")
 
