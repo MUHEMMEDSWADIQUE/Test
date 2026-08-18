@@ -1,0 +1,42 @@
+resources:
+  jobs:
+    data_processing_job:
+      name: ${bundle.target}_data_processing_job
+
+      tasks:
+        - task_key: process_data
+
+          notebook_task:
+            notebook_path: ../src/data_processing.py
+            base_parameters:
+              catalog: ${var.catalog}
+              schema: ${var.schema}
+
+          environment_key: default
+
+      environments:
+        - environment_key: default
+          spec:
+            client: "1"
+
+      schedule:
+        quartz_cron_expression: "0 0 2 * * ?"
+        timezone_id: "UTC"
+        pause_status: PAUSED
+
+      email_notifications:
+        on_failure:
+          - ${workspace.current_user.userName}
+
+      tags:
+        environment: ${bundle.target}
+        project: ${bundle.name}
+
+variables:
+  catalog:
+    description: Unity Catalog name
+    default: main
+
+  schema:
+    description: Schema name
+    default: default

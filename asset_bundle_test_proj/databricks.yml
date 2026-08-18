@@ -1,0 +1,23 @@
+bundle:
+  name: asset_bundle_test_proj
+
+include:
+  - resources/*.yml
+  - resources/*/*.yml
+
+targets:
+
+  dev:
+    mode: development
+    default: true
+    workspace:
+      host: https://dbc-48c8f217-7ee8.cloud.databricks.com
+
+  prod:
+    mode: production
+    workspace:
+      host: https://dbc-48c8f217-7ee8.cloud.databricks.com
+      root_path: /Users/swadiqueputhukkolli@gmail.com/.bundle/${bundle.name}/${bundle.target}
+
+    run_as:
+      user_name: swadiqueputhukkolli@gmail.com
