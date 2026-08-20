@@ -13,12 +13,15 @@ jobs:
 
     steps:
 
+      # 1. Checkout repository
       - name: Checkout code
         uses: actions/checkout@v4
 
+      # 2. Install Databricks CLI
       - name: Install Databricks CLI
         uses: databricks/setup-cli@main
 
+      # 3. Check repository structure
       - name: Check repository structure
         run: |
           pwd
@@ -28,12 +31,47 @@ jobs:
           echo "Checking databricks.yml..."
           ls -la asset_bundle_test_proj/databricks.yml
 
+      # 4. Check GitHub secrets
+      - name: Check Databricks authentication
+        env:
+          DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
+          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+        run: |
+          if [ -z "$DATABRICKS_HOST" ]; then
+            echo "DATABRICKS_HOST is NOT configured"
+            exit 1
+          fi
+
+          if [ -z "$DATABRICKS_TOKEN" ]; then
+            echo "DATABRICKS_TOKEN is NOT configured"
+            exit 1
+          fi
+
+          echo "DATABRICKS_HOST is configured"
+          echo "DATABRICKS_TOKEN is configured"
+
+      # 5. Test Databricks authentication
+      - name: Test Databricks authentication
+        env:
+          DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
+          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+        run: |
+          databricks current-user me
+
+      # 6. Validate Databricks Bundle
       - name: Validate Databricks Bundle
         working-directory: ./asset_bundle_test_proj
+        env:
+          DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
+          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
         run: |
           databricks bundle validate --strict -t prod
 
+      # 7. Deploy Databricks Bundle
       - name: Deploy Databricks Bundle
         working-directory: ./asset_bundle_test_proj
+        env:
+          DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
+          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
         run: |
           databricks bundle deploy -t prod
