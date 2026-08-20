@@ -12,13 +12,6 @@ resources:
               schema: ${var.schema}
           environment_key: default
 
-        - task_key: process_data2
-          notebook_task:
-            notebook_path: ../src/data_processing.py
-            base_parameters:
-              catalog: ${var.catalog}
-              schema: ${var.schema}
-          environment_key: default
 
       environments:
         - environment_key: default
