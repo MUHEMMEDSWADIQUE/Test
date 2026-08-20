@@ -23,13 +23,17 @@ jobs:
         run: |
           pwd
           ls -la
+          echo "Checking asset bundle..."
+          ls -la asset_bundle_test_proj
           echo "Checking databricks.yml..."
-          ls -la databricks.yml
+          ls -la asset_bundle_test_proj/databricks.yml
 
       - name: Validate Databricks Bundle
+        working-directory: ./asset_bundle_test_proj
         run: |
           databricks bundle validate --strict -t prod
 
       - name: Deploy Databricks Bundle
+        working-directory: ./asset_bundle_test_proj
         run: |
           databricks bundle deploy -t prod
