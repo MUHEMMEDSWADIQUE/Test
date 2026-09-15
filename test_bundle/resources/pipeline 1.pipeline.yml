@@ -1,0 +1,54 @@
+# Sample Spark Declarative Pipeline (SDP) with Sample Data
+# This demonstrates a complete pipeline configuration with best practices
+
+resources:
+  pipelines:
+    pipeline_1:
+      name: 'Sample Sales Pipeline - ${bundle.target}'
+      
+      # Target location for pipeline tables
+      catalog: ${var.catalog}
+      target: ${var.schema}
+      
+      # Pipeline source code - all transformation notebooks in the folder
+      libraries:
+        - glob:
+            include: ../src/pipeline 1/transformations/**
+      
+      root_path: ../src/pipeline 1
+      
+      # Use serverless compute (recommended for production)
+      serverless: true
+      
+      # Configuration parameters passed to pipeline code
+      configuration:
+        # Sample data source - using Databricks sample datasets
+        source_catalog: 'samples'
+        source_schema: 'tpch'
+        source_table: 'lineitem'
+        # Or use external sample data path
+        sample_data_path: '/databricks-datasets/retail-org/customers/'
+        
+        # Pipeline table names
+        bronze_table: 'bronze_sales_raw'
+        silver_table: 'silver_sales_cleaned'
+        gold_table: 'gold_sales_aggregated'
+        
+        # Processing parameters
+        lookback_days: '30'
+        min_transaction_amount: '10.0'
+      
+      # Pipeline execution settings
+      continuous: false  # Set to false, use backing job for continuous
+      development: true   # Set to false in production target
+      photon: true       # Enable Photon for better performance
+      
+      # Use current channel for latest features
+      channel: current
+      
+      # Permissions - adjust based on your needs
+      permissions:
+        - level: CAN_VIEW
+          group_name: 'users'
+        - level: CAN_MANAGE
+          user_name: ${workspace.current_user.userName}
